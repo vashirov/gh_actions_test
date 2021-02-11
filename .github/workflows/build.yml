@@ -1,0 +1,35 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [gcc, gcc-asan]
+
+        include:
+          - variant: gcc
+            asan: 0
+            clang: 0
+          - variant: gcc-asan
+            asan: 1
+            clang: 0
+    container:
+      image: quay.io/389ds/ci-images:test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Tar build artifacts
+        run: tar -cvf dist.tar .
+
+      - name: Upload RPMs
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpms-${{ matrix.variant }}
+          path: dist.tar

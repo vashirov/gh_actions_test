@@ -1,0 +1,56 @@
+name: Run tests
+
+on:
+  workflow_run:
+    workflows: [build]
+    types:
+      - completed
+
+jobs:
+  generate_matrix:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-20.04
+    name: Generate test matrix
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+      - name: Get a list of all test suites
+        run: pwd && ls -laR && python .github/scripts/generate_matrix.py
+
+      - name: Get a list of all test suites
+        id: set-matrix
+        run: echo "::set-output name=matrix::$(python .github/scripts/generate_matrix.py)"
+
+
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    needs: generate_matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt update -y
+        sudo apt install -y docker.io containerd runc
+
+        sudo cp .github/daemon.json /etc/docker/daemon.json
+
+        sudo systemctl unmask docker
+        sudo systemctl start docker
+
+    - name: Download RPMs
+      uses: actions/download-artifact@master
+      with:
+        name: rpms-${{ matrix.variant }}
+    
+    - name: Extract RPMs
+      run: tar xvf dist.tar
