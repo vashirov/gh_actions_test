@@ -23,6 +23,6 @@ jobs = []
 for suite, variant in product(suites, variants):
     jobs.append({"suite": suite, "variant": variant}) 
 
-matrix = {"include": jobs[0:2]}
+matrix = {"include": jobs}
 
 print(json.dumps(matrix))
