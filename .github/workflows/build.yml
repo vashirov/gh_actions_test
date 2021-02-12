@@ -32,11 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-          # - name: Toggle AddressSanitizer support to ${{ matrix.asan }}
-          #   run: sed -i -e "/^ASAN_ON/s/.*/ASAN_ON = ${{ matrix.asan }}/" rpm.mk
+      - name: Toggle AddressSanitizer support to ${{ matrix.asan }}
+        run: sed -i -e "/^ASAN_ON/s/.*/ASAN_ON = ${{ matrix.asan }}/" rpm.mk
 
-          # - name: Toggle Clang support to ${{ matrix.clang }}
-          #   run: sed -i -e "/^CLANG_ON/s/.*/CLANG_ON = ${{ matrix.clang }}/" rpm.mk
+      - name: Toggle Clang support to ${{ matrix.clang }}
+        run: sed -i -e "/^CLANG_ON/s/.*/CLANG_ON = ${{ matrix.clang }}/" rpm.mk
 
       # - name: Build RPMs
       #   run: cd $GITHUB_WORKSPACE && SKIP_AUDIT_CI=1 make -f rpm.mk dist-bz2 rpms

@@ -24,7 +24,6 @@ jobs:
 
   test:
     name: Test
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-20.04
     needs: generate_matrix
     strategy:
@@ -49,8 +48,6 @@ jobs:
       uses: vashirov/action-download-artifact@v2
       with:
         name: rpms-${{ matrix.variant }}
-        workflow: build.yml
-        workflow_conclusion: success
     
     - name: Extract RPMs
       run: tar xvf dist.tar
