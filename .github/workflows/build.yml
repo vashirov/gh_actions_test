@@ -6,25 +6,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        #variant: [gcc, gcc-asan, clang, clang-asan]
-        variant: [gcc, gcc-asan]
-
-        include:
-          - variant: gcc
-            asan: 0
-            clang: 0
-          - variant: gcc-asan
-            asan: 1
-            clang: 0
-          # - variant: clang
-          #   asan: 0
-          #   clang: 1
-          # - variant: clang-asan
-          #   asan: 1
-          #   clang: 1
     container:
       image: quay.io/389ds/ci-images:test
 
@@ -32,11 +13,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Tar build artifacts
-        run: tar -cvf dist.tar .
+      - name: check sysctl
+        run: |
+          set -eux
+          sysctl -a | grep suid_dumpable
 
-      - name: Upload RPMs
-        uses: actions/upload-artifact@v2
-        with:
-          name: rpms-${{ matrix.variant }}
-          path: dist.tar
+      - name: sysctl set 
+        run: |
+          set -eux
+          sysctl fs.suid_dumpable=0
+          sysctl -a | grep suid_dumpable
+
