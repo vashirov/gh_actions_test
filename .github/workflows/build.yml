@@ -12,14 +12,14 @@ jobs:
       - name: check sysctl
         run: |
           set -eux
-          sysctl -a | grep suid_dumpable
-          sysctl -a | grep core_pattern
+          sudo sysctl -a | grep suid_dumpable
+          sudo sysctl -a | grep core_pattern
 
       - name: sysctl set 
         run: |
           set -eux
-          sysctl -w fs.suid_dumpable=0
-          sysctl -a | grep suid_dumpable
+          sudo sysctl -w fs.suid_dumpable=0
+          sudo sysctl -a | grep suid_dumpable
          
   in_container:
     name: Container check
